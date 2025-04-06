@@ -1,0 +1,1 @@
+import{Z as r}from"./DS1vFCdY.js";import{e as s,o as t,h as n,w as p,r as l,T as i,U as c,f}from"./C1mGvpVk.js";const d=s({__name:"AlertDialogTrigger",props:{asChild:{type:Boolean},as:{}},setup(e){const a=e;return(o,m)=>(t(),n(f(r),i(c(a)),{default:p(()=>[l(o.$slots,"default")]),_:3},16))}});export{d as _};

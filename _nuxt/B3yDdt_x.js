@@ -1,0 +1,1 @@
+import{I as e}from"./COF9i6B0.js";import{e as o,c as t,b as a,o as r}from"./C1mGvpVk.js";import"./DlAUqK2U.js";const _=o({__name:"image-preview",setup(m){return(s,p)=>(r(),t("div",null,[a(e,{src:"https://picsum.photos/200/300",alt:"Random Image"})]))}});export{_ as default};

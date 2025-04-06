@@ -1,0 +1,1 @@
+import{R as f,g as o}from"./C1mGvpVk.js";const c=f("refetch",()=>{const e=o(!1);function t(){e.value=!0}function r(){e.value=!1}return{shouldRefetch:e,triggerRefetch:t,resetRefetch:r}});export{c as u};
