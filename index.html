@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,9 +38,11 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
+
     .aspect-video {
       aspect-ratio: 16 / 9;
     }
+
     .sr-only {
       position: absolute;
       width: 1px;
@@ -53,10 +56,10 @@
     }
   </style>
 </head>
+
 <body class="bg-gray-50">
   <div id="app" class="w-full max-w-7xl mx-auto px-4 py-8">
     <h1 class="text-2xl font-bold mb-6">影片專區</h1>
-    
     <!-- 標籤篩選區 -->
     <div class="mb-8 space-y-4">
       <!-- 科目標籤 -->
@@ -66,7 +69,6 @@
           <!-- 科目標籤將由JavaScript動態生成 -->
         </div>
       </div>
-      
       <!-- 年度標籤 -->
       <div>
         <h2 class="text-lg font-medium mb-2">年度</h2>
@@ -75,19 +77,22 @@
         </div>
       </div>
     </div>
-    
     <!-- 影片列表 -->
     <div id="video-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <!-- 影片卡片將由JavaScript動態生成 -->
     </div>
-    
     <!-- 無影片提示 -->
     <div id="no-videos" class="text-center py-12 hidden">
-      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4 text-muted-foreground"><path d="M10.66 6H14a2 2 0 0 1 2 2v2.34l1 1L22 8v8"></path><path d="M16 16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2l10 10Z"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="mx-auto mb-4 text-muted-foreground">
+        <path d="M10.66 6H14a2 2 0 0 1 2 2v2.34l1 1L22 8v8"></path>
+        <path d="M16 16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2l10 10Z"></path>
+        <line x1="2" y1="2" x2="22" y2="22"></line>
+      </svg>
       <p class="text-lg font-medium">沒有符合條件的影片</p>
       <p class="text-muted-foreground mt-2">請嘗試選擇其他標籤組合</p>
     </div>
-    
     <!-- 影片播放對話框 -->
     <div id="video-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 hidden">
       <div class="w-full max-w-5xl bg-background rounded-lg overflow-hidden border border-gray-200 shadow-xl">
@@ -97,7 +102,6 @@
             <div class="aspect-video">
               <video id="video-player" class="w-full h-full" controls controlsList="nodownload"></video>
             </div>
-            
             <!-- 影片資訊 -->
             <div class="p-4 border-b lg:border-b-0 lg:border-r border-gray-200">
               <div class="flex justify-between items-start">
@@ -108,21 +112,27 @@
                   </div>
                 </div>
                 <button id="close-modal-mobile" class="p-2 rounded-full hover:bg-muted lg:hidden">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                  </svg>
                 </button>
               </div>
             </div>
           </div>
-          
           <!-- 時間碼區域 -->
           <div class="lg:w-1/3 flex flex-col">
             <div class="p-4 flex justify-between items-center border-b border-gray-200">
               <h4 class="font-medium">時間碼</h4>
               <button id="close-modal-desktop" class="p-2 rounded-full hover:bg-muted hidden lg:block">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 6 6 18"></path>
+                  <path d="m6 6 12 12"></path>
+                </svg>
               </button>
             </div>
-            
             <!-- 時間碼列表 -->
             <div class="overflow-y-auto max-h-[400px] p-2">
               <div id="timecodes-grid" class="grid grid-cols-3 gap-2">
@@ -134,7 +144,6 @@
       </div>
     </div>
   </div>
-
   <script>
     // 科目和年度選項
     const subjects = ['國文', '英文', '數A', '數B', '自然'];
@@ -151,94 +160,76 @@
     const videos = [
       {
         id: 1,
-        title: '國文文言文解析',
-        thumbnail: 'https://via.placeholder.com/350x200?text=國文文言文解析',
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        title: '114年學測英文詳解',
+        thumbnail: './public/placeholder/test-cover.jpg',
+        videoUrl: './public/video/test-video.mp4',
+        tags: ['英文', '114'],
+        uploadDate: '2025-01-15',
+        duration: '5:00'
+      },
+      {
+        id: 2,
+        title: '111年學測國文詳解',
+        thumbnail: 'https://placehold.co/200x350',
+        videoUrl: './public/video/test-video.mp4',
         tags: ['國文', '111'],
         uploadDate: '2022-09-01',
         duration: '45:30'
       },
       {
-        id: 2,
-        title: '英文多益準備策略',
-        thumbnail: 'https://via.placeholder.com/350x200?text=英文多益準備策略',
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        id: 3,
+        title: '112年學測英文詳解',
+        thumbnail: 'https://placehold.co/200x350',
+        videoUrl: './public/video/test-video.mp4',
         tags: ['英文', '112'],
         uploadDate: '2023-03-15',
         duration: '38:15'
       },
       {
-        id: 3,
-        title: '數A微積分重點整理',
-        thumbnail: 'https://via.placeholder.com/350x200?text=數A微積分重點整理',
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        id: 4,
+        title: '113年學測數A詳解',
+        thumbnail: 'https://placehold.co/200x350',
+        videoUrl: './public/video/test-video.mp4',
         tags: ['數A', '113'],
         uploadDate: '2024-01-10',
         duration: '52:40'
       },
       {
-        id: 4,
-        title: '數B統計與機率',
-        thumbnail: 'https://via.placeholder.com/350x200?text=數B統計與機率',
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        id: 5,
+        title: '111年學測數B詳解',
+        thumbnail: 'https://placehold.co/200x350',
+        videoUrl: './public/video/test-video.mp4',
         tags: ['數B', '111'],
         uploadDate: '2022-10-05',
         duration: '41:20'
       },
       {
-        id: 5,
-        title: '自然科物理力學解題',
-        thumbnail: 'https://via.placeholder.com/350x200?text=自然科物理力學解題',
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        id: 6,
+        title: '112年學測自然詳解',
+        thumbnail: 'https://placehold.co/200x350',
+        videoUrl: './public/video/test-video.mp4',
         tags: ['自然', '112'],
         uploadDate: '2023-05-20',
         duration: '36:45'
       },
       {
-        id: 6,
-        title: '國文現代文學賞析',
-        thumbnail: 'https://via.placeholder.com/350x200?text=國文現代文學賞析',
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        id: 7,
+        title: '113年學測國文詳解',
+        thumbnail: 'https://placehold.co/200x350',
+        videoUrl: './public/video/test-video.mp4',
         tags: ['國文', '113'],
         uploadDate: '2024-02-15',
         duration: '39:10'
       },
       {
-        id: 7,
-        title: '英文閱讀理解策略',
-        thumbnail: 'https://via.placeholder.com/350x200?text=英文閱讀理解策略',
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        id: 8,
+        title: '113年學測英文詳解',
+        thumbnail: 'https://placehold.co/200x350',
+        videoUrl: './public/video/test-video.mp4',
         tags: ['英文', '113'],
         uploadDate: '2024-04-10',
         duration: '43:25'
       },
-      {
-        id: 8,
-        title: '數A線性代數應用',
-        thumbnail: 'https://via.placeholder.com/350x200?text=數A線性代數應用',
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-        tags: ['數A', '114'],
-        uploadDate: '2025-01-05',
-        duration: '48:50'
-      },
-      {
-        id: 9,
-        title: '自然科化學元素週期表',
-        thumbnail: 'https://via.placeholder.com/350x200?text=自然科化學元素週期表',
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-        tags: ['自然', '111'],
-        uploadDate: '2022-11-20',
-        duration: '35:15'
-      },
-      {
-        id: 10,
-        title: '114年學測英文詳解',
-        thumbnail: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/114%E5%AD%B8%E6%B8%AC%E8%8B%B1%E6%96%87%285%E5%88%86%E9%90%98demo%E7%89%88%29-Cover.jpg-EIKdps8NKIESR1RH0aax9LLcU9k40B.jpeg',
-        videoUrl: 'https://drive.google.com/file/d/1z1iyjctfAMtZNO2tPWw1AXzJ84USa77d/preview',
-        tags: ['英文', '114'],
-        uploadDate: '2025-01-15',
-        duration: '2:37:25'
-      }
     ];
 
     // 實際時間碼數據
@@ -316,7 +307,7 @@
       const hours = Math.floor(seconds / 3600);
       const mins = Math.floor((seconds % 3600) / 60);
       const secs = seconds % 60;
-      
+
       if (hours > 0) {
         return `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
       } else {
@@ -335,21 +326,21 @@
     // 根據選擇的標籤過濾影片
     function getFilteredVideos() {
       let result = [...videos];
-      
+
       // 如果有選擇科目，則過濾
       if (selectedSubjects.length > 0) {
-        result = result.filter(video => 
+        result = result.filter(video =>
           video.tags.some(tag => selectedSubjects.includes(tag))
         );
       }
-      
+
       // 如果有選擇年度，則過濾
       if (selectedYears.length > 0) {
-        result = result.filter(video => 
+        result = result.filter(video =>
           video.tags.some(tag => selectedYears.includes(tag))
         );
       }
-      
+
       return result;
     }
 
@@ -378,7 +369,7 @@
     // 播放影片
     function playVideo(video) {
       selectedVideo = video;
-      
+
       // 設置影片播放器
       if (video.videoUrl.includes('youtube.com')) {
         // YouTube嵌入
@@ -402,10 +393,10 @@
         // 普通影片
         videoPlayerEl.src = video.videoUrl;
       }
-      
+
       // 設置標題和標籤
       modalTitleEl.textContent = video.title;
-      
+
       // 清空並重新生成標籤
       modalTagsEl.innerHTML = '';
       video.tags.forEach(tag => {
@@ -414,10 +405,10 @@
         tagEl.textContent = `#${tag}`;
         modalTagsEl.appendChild(tagEl);
       });
-      
+
       // 生成時間碼
       renderTimecodes();
-      
+
       // 顯示對話框
       videoModalEl.classList.remove('hidden');
     }
@@ -426,7 +417,7 @@
     function closeVideo() {
       videoModalEl.classList.add('hidden');
       selectedVideo = null;
-      
+
       // 重置影片播放器
       const videoContainer = videoPlayerEl.parentElement;
       videoContainer.innerHTML = `<video id="video-player" class="w-full h-full" controls controlsList="nodownload"></video>`;
@@ -438,11 +429,10 @@
       subjects.forEach(subject => {
         const isSelected = selectedSubjects.includes(subject);
         const buttonEl = document.createElement('button');
-        buttonEl.className = `px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-          isSelected 
-            ? 'bg-primary text-primary-foreground' 
-            : 'bg-muted hover:bg-muted/80'
-        }`;
+        buttonEl.className = `px-4 py-2 rounded-full text-sm font-medium transition-colors ${isSelected
+          ? 'bg-primary text-primary-foreground'
+          : 'bg-muted hover:bg-muted/80'
+          }`;
         buttonEl.textContent = subject;
         buttonEl.addEventListener('click', () => toggleSubject(subject));
         subjectFiltersEl.appendChild(buttonEl);
@@ -455,11 +445,10 @@
       years.forEach(year => {
         const isSelected = selectedYears.includes(year);
         const buttonEl = document.createElement('button');
-        buttonEl.className = `px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-          isSelected 
-            ? 'bg-primary text-primary-foreground' 
-            : 'bg-muted hover:bg-muted/80'
-        }`;
+        buttonEl.className = `px-4 py-2 rounded-full text-sm font-medium transition-colors ${isSelected
+          ? 'bg-primary text-primary-foreground'
+          : 'bg-muted hover:bg-muted/80'
+          }`;
         buttonEl.textContent = `${year}年度`;
         buttonEl.addEventListener('click', () => toggleYear(year));
         yearFiltersEl.appendChild(buttonEl);
@@ -469,7 +458,7 @@
     // 渲染影片列表
     function renderVideoList() {
       const filteredVideos = getFilteredVideos();
-      
+
       // 顯示或隱藏無影片提示
       if (filteredVideos.length === 0) {
         videoListEl.classList.add('hidden');
@@ -479,14 +468,14 @@
         videoListEl.classList.remove('hidden');
         noVideosEl.classList.add('hidden');
       }
-      
+
       // 清空並重新生成影片列表
       videoListEl.innerHTML = '';
-      
+
       filteredVideos.forEach(video => {
         const videoCardEl = document.createElement('div');
         videoCardEl.className = 'rounded-lg overflow-hidden bg-white border border-gray-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-shadow duration-300';
-        
+
         videoCardEl.innerHTML = `
           <div class="relative aspect-video bg-neutral-400 overflow-hidden group cursor-pointer">
             <img 
@@ -526,10 +515,10 @@
             </div>
           </div>
         `;
-        
+
         videoListEl.appendChild(videoCardEl);
       });
-      
+
       // 添加播放按鈕事件監聽器
       document.querySelectorAll('.play-button').forEach(button => {
         button.addEventListener('click', () => {
@@ -545,7 +534,7 @@
     // 渲染時間碼
     function renderTimecodes() {
       timecodesGridEl.innerHTML = '';
-      
+
       timecodes.forEach(timecode => {
         const buttonEl = document.createElement('button');
         buttonEl.className = 'p-2 text-sm text-center rounded hover:bg-neutral-100 transition-colors';
@@ -563,7 +552,7 @@
       renderSubjectFilters();
       renderYearFilters();
       renderVideoList();
-      
+
       // 添加關閉對話框事件
       closeModalMobileEl.addEventListener('click', closeVideo);
       closeModalDesktopEl.addEventListener('click', closeVideo);
@@ -578,4 +567,5 @@
     document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
+
 </html>
