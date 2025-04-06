@@ -1,1 +1,0 @@
-const E={ENGLISH:"英文",MATH:"數學",CHINESE:"國文",PHYSICS:"物理",CHEMISTRY:"化學",EARTH_SCIENCE:"地科",BIOLOGY:"生物",HISTORY:"歷史",GEOGRAPHY:"地理",CIVICS:"公民"},S={OPEN:"開放中",ASSIGNED:"已指派",IN_PROGRESS:"進行中",SOLVED:"已解決",REJECTED:"已拒絕",TIMEOUT:"已逾期",CLOSED:"已關閉",DELETED:"已刪除"};export{E as a,S as s};

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>影片專區</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#3b82f6',
+              foreground: '#ffffff',
+            },
+            muted: {
+              DEFAULT: '#f3f4f6',
+              foreground: '#6b7280',
+            },
+            card: {
+              DEFAULT: '#ffffff',
+            },
+            border: {
+              DEFAULT: '#e5e7eb',
+            },
+            background: {
+              DEFAULT: '#ffffff',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .aspect-video {
+      aspect-ratio: 16 / 9;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div id="app" class="w-full max-w-7xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">影片專區</h1>
+    
+    <!-- 標籤篩選區 -->
+    <div class="mb-8 space-y-4">
+      <!-- 科目標籤 -->
+      <div>
+        <h2 class="text-lg font-medium mb-2">科目</h2>
+        <div class="flex flex-wrap gap-2" id="subject-filters">
+          <!-- 科目標籤將由JavaScript動態生成 -->
+        </div>
+      </div>
+      
+      <!-- 年度標籤 -->
+      <div>
+        <h2 class="text-lg font-medium mb-2">年度</h2>
+        <div class="flex flex-wrap gap-2" id="year-filters">
+          <!-- 年度標籤將由JavaScript動態生成 -->
+        </div>
+      </div>
+    </div>
+    
+    <!-- 影片列表 -->
+    <div id="video-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- 影片卡片將由JavaScript動態生成 -->
+    </div>
+    
+    <!-- 無影片提示 -->
+    <div id="no-videos" class="text-center py-12 hidden">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4 text-muted-foreground"><path d="M10.66 6H14a2 2 0 0 1 2 2v2.34l1 1L22 8v8"></path><path d="M16 16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2l10 10Z"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>
+      <p class="text-lg font-medium">沒有符合條件的影片</p>
+      <p class="text-muted-foreground mt-2">請嘗試選擇其他標籤組合</p>
+    </div>
+    
+    <!-- 影片播放對話框 -->
+    <div id="video-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 hidden">
+      <div class="w-full max-w-5xl bg-background rounded-lg overflow-hidden border border-gray-200 shadow-xl">
+        <div class="flex flex-col lg:flex-row">
+          <!-- 影片播放區域 -->
+          <div class="lg:w-2/3">
+            <div class="aspect-video">
+              <video id="video-player" class="w-full h-full" controls controlsList="nodownload"></video>
+            </div>
+            
+            <!-- 影片資訊 -->
+            <div class="p-4 border-b lg:border-b-0 lg:border-r border-gray-200">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 id="modal-title" class="text-xl font-bold"></h3>
+                  <div id="modal-tags" class="flex flex-wrap gap-2 mt-2">
+                    <!-- 標籤將由JavaScript動態生成 -->
+                  </div>
+                </div>
+                <button id="close-modal-mobile" class="p-2 rounded-full hover:bg-muted lg:hidden">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 時間碼區域 -->
+          <div class="lg:w-1/3 flex flex-col">
+            <div class="p-4 flex justify-between items-center border-b border-gray-200">
+              <h4 class="font-medium">時間碼</h4>
+              <button id="close-modal-desktop" class="p-2 rounded-full hover:bg-muted hidden lg:block">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+              </button>
+            </div>
+            
+            <!-- 時間碼列表 -->
+            <div class="overflow-y-auto max-h-[400px] p-2">
+              <div id="timecodes-grid" class="grid grid-cols-3 gap-2">
+                <!-- 時間碼將由JavaScript動態生成 -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 科目和年度選項
+    const subjects = ['國文', '英文', '數A', '數B', '自然'];
+    const years = ['111', '112', '113', '114'];
+
+    // 選擇的標籤
+    let selectedSubjects = [];
+    let selectedYears = [];
+
+    // 選擇的影片
+    let selectedVideo = null;
+
+    // 模擬影片資料
+    const videos = [
+      {
+        id: 1,
+        title: '國文文言文解析',
+        thumbnail: 'https://via.placeholder.com/350x200?text=國文文言文解析',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        tags: ['國文', '111'],
+        uploadDate: '2022-09-01',
+        duration: '45:30'
+      },
+      {
+        id: 2,
+        title: '英文多益準備策略',
+        thumbnail: 'https://via.placeholder.com/350x200?text=英文多益準備策略',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        tags: ['英文', '112'],
+        uploadDate: '2023-03-15',
+        duration: '38:15'
+      },
+      {
+        id: 3,
+        title: '數A微積分重點整理',
+        thumbnail: 'https://via.placeholder.com/350x200?text=數A微積分重點整理',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        tags: ['數A', '113'],
+        uploadDate: '2024-01-10',
+        duration: '52:40'
+      },
+      {
+        id: 4,
+        title: '數B統計與機率',
+        thumbnail: 'https://via.placeholder.com/350x200?text=數B統計與機率',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        tags: ['數B', '111'],
+        uploadDate: '2022-10-05',
+        duration: '41:20'
+      },
+      {
+        id: 5,
+        title: '自然科物理力學解題',
+        thumbnail: 'https://via.placeholder.com/350x200?text=自然科物理力學解題',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        tags: ['自然', '112'],
+        uploadDate: '2023-05-20',
+        duration: '36:45'
+      },
+      {
+        id: 6,
+        title: '國文現代文學賞析',
+        thumbnail: 'https://via.placeholder.com/350x200?text=國文現代文學賞析',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        tags: ['國文', '113'],
+        uploadDate: '2024-02-15',
+        duration: '39:10'
+      },
+      {
+        id: 7,
+        title: '英文閱讀理解策略',
+        thumbnail: 'https://via.placeholder.com/350x200?text=英文閱讀理解策略',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        tags: ['英文', '113'],
+        uploadDate: '2024-04-10',
+        duration: '43:25'
+      },
+      {
+        id: 8,
+        title: '數A線性代數應用',
+        thumbnail: 'https://via.placeholder.com/350x200?text=數A線性代數應用',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        tags: ['數A', '114'],
+        uploadDate: '2025-01-05',
+        duration: '48:50'
+      },
+      {
+        id: 9,
+        title: '自然科化學元素週期表',
+        thumbnail: 'https://via.placeholder.com/350x200?text=自然科化學元素週期表',
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        tags: ['自然', '111'],
+        uploadDate: '2022-11-20',
+        duration: '35:15'
+      },
+      {
+        id: 10,
+        title: '114年學測英文詳解',
+        thumbnail: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/114%E5%AD%B8%E6%B8%AC%E8%8B%B1%E6%96%87%285%E5%88%86%E9%90%98demo%E7%89%88%29-Cover.jpg-EIKdps8NKIESR1RH0aax9LLcU9k40B.jpeg',
+        videoUrl: 'https://drive.google.com/file/d/1z1iyjctfAMtZNO2tPWw1AXzJ84USa77d/preview',
+        tags: ['英文', '114'],
+        uploadDate: '2025-01-15',
+        duration: '2:37:25'
+      }
+    ];
+
+    // 實際時間碼數據
+    const timecodes = [
+      { id: 1, label: '第1題', time: 25 },
+      { id: 2, label: '第2題', time: 81 },
+      { id: 3, label: '第3題', time: 173 },
+      { id: 4, label: '第4題', time: 278 },
+      { id: 5, label: '第5題', time: 383 },
+      { id: 6, label: '第6題', time: 481 },
+      { id: 7, label: '第7題', time: 592 },
+      { id: 8, label: '第8題', time: 710 },
+      { id: 9, label: '第9題', time: 801 },
+      { id: 10, label: '第10題', time: 922 },
+      { id: 11, label: '第11題', time: 1036 },
+      { id: 12, label: '第12題', time: 1210 },
+      { id: 13, label: '第13題', time: 1323 },
+      { id: 14, label: '第14題', time: 1433 },
+      { id: 15, label: '第15題', time: 1554 },
+      { id: 16, label: '第16題', time: 1609 },
+      { id: 17, label: '第17題', time: 1742 },
+      { id: 18, label: '第18題', time: 1874 },
+      { id: 19, label: '第19題', time: 1963 },
+      { id: 20, label: '第20題', time: 2040 },
+      { id: 21, label: '第21題', time: 2121 },
+      { id: 22, label: '第22題', time: 2474 },
+      { id: 23, label: '第23題', time: 2580 },
+      { id: 24, label: '第24題', time: 2685 },
+      { id: 25, label: '第25題', time: 2852 },
+      { id: 26, label: '第26題', time: 2935 },
+      { id: 27, label: '第27題', time: 2993 },
+      { id: 28, label: '第28題', time: 3094 },
+      { id: 29, label: '第29題', time: 3189 },
+      { id: 30, label: '第30題', time: 3263 },
+      { id: 31, label: '第31題', time: 3314 },
+      { id: 32, label: '第32題', time: 3556 },
+      { id: 33, label: '第33題', time: 3722 },
+      { id: 34, label: '第34題', time: 3866 },
+      { id: 35, label: '第35題', time: 3979 },
+      { id: 36, label: '第36題', time: 4751 },
+      { id: 37, label: '第37題', time: 4841 },
+      { id: 38, label: '第38題', time: 5024 },
+      { id: 39, label: '第39題', time: 5092 },
+      { id: 40, label: '第40題', time: 5898 },
+      { id: 41, label: '第41題', time: 6076 },
+      { id: 42, label: '第42題', time: 6272 },
+      { id: 43, label: '第43題', time: 6376 },
+      { id: 44, label: '第44題', time: 7235 },
+      { id: 45, label: '第45題', time: 7389 },
+      { id: 46, label: '第46題', time: 7478 },
+      { id: 47, label: '第47題', time: 7571 },
+      { id: 48, label: '第48題', time: 8634 },
+      { id: 49, label: '第49題', time: 8787 },
+      { id: 50, label: '第50題', time: 8880 },
+      { id: 51, label: '第51題', time: 8944 },
+      { id: 52, label: '第52題', time: 9139 },
+      { id: 53, label: '第53題', time: 9444 }
+    ];
+
+    // DOM元素
+    const videoListEl = document.getElementById('video-list');
+    const noVideosEl = document.getElementById('no-videos');
+    const subjectFiltersEl = document.getElementById('subject-filters');
+    const yearFiltersEl = document.getElementById('year-filters');
+    const videoModalEl = document.getElementById('video-modal');
+    const videoPlayerEl = document.getElementById('video-player');
+    const modalTitleEl = document.getElementById('modal-title');
+    const modalTagsEl = document.getElementById('modal-tags');
+    const timecodesGridEl = document.getElementById('timecodes-grid');
+    const closeModalMobileEl = document.getElementById('close-modal-mobile');
+    const closeModalDesktopEl = document.getElementById('close-modal-desktop');
+
+    // 格式化時間（秒數轉為 HH:MM:SS 格式）
+    function formatTime(seconds) {
+      const hours = Math.floor(seconds / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
+      const secs = seconds % 60;
+      
+      if (hours > 0) {
+        return `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      } else {
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      }
+    }
+
+    // 跳轉到指定時間
+    function seekToTime(seconds) {
+      if (videoPlayerEl) {
+        videoPlayerEl.currentTime = seconds;
+        videoPlayerEl.play();
+      }
+    }
+
+    // 根據選擇的標籤過濾影片
+    function getFilteredVideos() {
+      let result = [...videos];
+      
+      // 如果有選擇科目，則過濾
+      if (selectedSubjects.length > 0) {
+        result = result.filter(video => 
+          video.tags.some(tag => selectedSubjects.includes(tag))
+        );
+      }
+      
+      // 如果有選擇年度，則過濾
+      if (selectedYears.length > 0) {
+        result = result.filter(video => 
+          video.tags.some(tag => selectedYears.includes(tag))
+        );
+      }
+      
+      return result;
+    }
+
+    // 切換科目選擇
+    function toggleSubject(subject) {
+      if (selectedSubjects.includes(subject)) {
+        selectedSubjects = selectedSubjects.filter(s => s !== subject);
+      } else {
+        selectedSubjects.push(subject);
+      }
+      renderSubjectFilters();
+      renderVideoList();
+    }
+
+    // 切換年度選擇
+    function toggleYear(year) {
+      if (selectedYears.includes(year)) {
+        selectedYears = selectedYears.filter(y => y !== year);
+      } else {
+        selectedYears.push(year);
+      }
+      renderYearFilters();
+      renderVideoList();
+    }
+
+    // 播放影片
+    function playVideo(video) {
+      selectedVideo = video;
+      
+      // 設置影片播放器
+      if (video.videoUrl.includes('youtube.com')) {
+        // YouTube嵌入
+        videoPlayerEl.outerHTML = `<iframe 
+          src="${video.videoUrl}" 
+          class="w-full h-full" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen
+        ></iframe>`;
+      } else if (video.videoUrl.includes('drive.google.com')) {
+        // Google Drive嵌入
+        videoPlayerEl.outerHTML = `<iframe 
+          src="${video.videoUrl}" 
+          class="w-full h-full" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen
+        ></iframe>`;
+      } else {
+        // 普通影片
+        videoPlayerEl.src = video.videoUrl;
+      }
+      
+      // 設置標題和標籤
+      modalTitleEl.textContent = video.title;
+      
+      // 清空並重新生成標籤
+      modalTagsEl.innerHTML = '';
+      video.tags.forEach(tag => {
+        const tagEl = document.createElement('span');
+        tagEl.className = 'px-2 py-0.5 bg-neutral-100 text-neutral-700 text-xs font-medium rounded';
+        tagEl.textContent = `#${tag}`;
+        modalTagsEl.appendChild(tagEl);
+      });
+      
+      // 生成時間碼
+      renderTimecodes();
+      
+      // 顯示對話框
+      videoModalEl.classList.remove('hidden');
+    }
+
+    // 關閉影片
+    function closeVideo() {
+      videoModalEl.classList.add('hidden');
+      selectedVideo = null;
+      
+      // 重置影片播放器
+      const videoContainer = videoPlayerEl.parentElement;
+      videoContainer.innerHTML = `<video id="video-player" class="w-full h-full" controls controlsList="nodownload"></video>`;
+    }
+
+    // 渲染科目過濾器
+    function renderSubjectFilters() {
+      subjectFiltersEl.innerHTML = '';
+      subjects.forEach(subject => {
+        const isSelected = selectedSubjects.includes(subject);
+        const buttonEl = document.createElement('button');
+        buttonEl.className = `px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+          isSelected 
+            ? 'bg-primary text-primary-foreground' 
+            : 'bg-muted hover:bg-muted/80'
+        }`;
+        buttonEl.textContent = subject;
+        buttonEl.addEventListener('click', () => toggleSubject(subject));
+        subjectFiltersEl.appendChild(buttonEl);
+      });
+    }
+
+    // 渲染年度過濾器
+    function renderYearFilters() {
+      yearFiltersEl.innerHTML = '';
+      years.forEach(year => {
+        const isSelected = selectedYears.includes(year);
+        const buttonEl = document.createElement('button');
+        buttonEl.className = `px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+          isSelected 
+            ? 'bg-primary text-primary-foreground' 
+            : 'bg-muted hover:bg-muted/80'
+        }`;
+        buttonEl.textContent = `${year}年度`;
+        buttonEl.addEventListener('click', () => toggleYear(year));
+        yearFiltersEl.appendChild(buttonEl);
+      });
+    }
+
+    // 渲染影片列表
+    function renderVideoList() {
+      const filteredVideos = getFilteredVideos();
+      
+      // 顯示或隱藏無影片提示
+      if (filteredVideos.length === 0) {
+        videoListEl.classList.add('hidden');
+        noVideosEl.classList.remove('hidden');
+        return;
+      } else {
+        videoListEl.classList.remove('hidden');
+        noVideosEl.classList.add('hidden');
+      }
+      
+      // 清空並重新生成影片列表
+      videoListEl.innerHTML = '';
+      
+      filteredVideos.forEach(video => {
+        const videoCardEl = document.createElement('div');
+        videoCardEl.className = 'rounded-lg overflow-hidden bg-white border border-gray-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-shadow duration-300';
+        
+        videoCardEl.innerHTML = `
+          <div class="relative aspect-video bg-neutral-400 overflow-hidden group cursor-pointer">
+            <img 
+              src="${video.thumbnail}" 
+              alt="${video.title}"
+              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            
+            <!-- 半透明覆蓋層 - 只在hover時顯示 -->
+            <div class="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
+            <!-- 播放按鈕 - 只在hover時顯示，確保在覆蓋層之上 -->
+            <button 
+              class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 play-button"
+              data-video-id="${video.id}"
+            >
+              <div class="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-md transform scale-75 group-hover:scale-100 transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play text-neutral-800 transform translate-x-0.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              </div>
+            </button>
+            
+            <!-- 影片時長 -->
+            <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-black/70 text-white text-xs font-medium rounded z-10">
+              ${video.duration}
+            </div>
+          </div>
+          
+          <!-- 影片資訊 -->
+          <div class="p-4">
+            <h3 class="text-base font-medium mb-2">${video.title}</h3>
+            <div class="flex flex-wrap gap-1.5">
+              ${video.tags.map(tag => `
+                <span class="px-2 py-0.5 bg-neutral-100 text-neutral-700 text-xs font-medium rounded">
+                  #${tag}
+                </span>
+              `).join('')}
+            </div>
+          </div>
+        `;
+        
+        videoListEl.appendChild(videoCardEl);
+      });
+      
+      // 添加播放按鈕事件監聽器
+      document.querySelectorAll('.play-button').forEach(button => {
+        button.addEventListener('click', () => {
+          const videoId = parseInt(button.getAttribute('data-video-id'));
+          const video = videos.find(v => v.id === videoId);
+          if (video) {
+            playVideo(video);
+          }
+        });
+      });
+    }
+
+    // 渲染時間碼
+    function renderTimecodes() {
+      timecodesGridEl.innerHTML = '';
+      
+      timecodes.forEach(timecode => {
+        const buttonEl = document.createElement('button');
+        buttonEl.className = 'p-2 text-sm text-center rounded hover:bg-neutral-100 transition-colors';
+        buttonEl.innerHTML = `
+          <div class="font-medium">${timecode.label}</div>
+          <div class="text-xs text-neutral-500">${formatTime(timecode.time)}</div>
+        `;
+        buttonEl.addEventListener('click', () => seekToTime(timecode.time));
+        timecodesGridEl.appendChild(buttonEl);
+      });
+    }
+
+    // 初始化頁面
+    function init() {
+      renderSubjectFilters();
+      renderYearFilters();
+      renderVideoList();
+      
+      // 添加關閉對話框事件
+      closeModalMobileEl.addEventListener('click', closeVideo);
+      closeModalDesktopEl.addEventListener('click', closeVideo);
+      videoModalEl.addEventListener('click', event => {
+        if (event.target === videoModalEl) {
+          closeVideo();
+        }
+      });
+    }
+
+    // 頁面加載完成後初始化
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
